@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button, Container, Stack } from "@mui/material";
+import { Button, Container, Stack, Typography } from "@mui/material";
 import Header from "../component/Header";
 import axios from "axios";
 import EditTask from "./EditTask";
@@ -36,7 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function Home() {
+export default function PendingTaskList() {
   const [data, setData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [updateId, setUpdateId] = React.useState();
@@ -55,6 +55,13 @@ export default function Home() {
       setData(res.data);
     });
   }, []);
+
+  // filter and search
+  const sortedDetail = useMemo(() => {
+    return data.filter(
+      (item) =>(item.task_status === "Pending")
+    );
+  }, [data]);
 
   const handleDelete = (id) => {
     const myID = id;
@@ -100,12 +107,11 @@ export default function Home() {
       <br />
       <Container>
         <Stack spacing={1} direction="row" justifyContent="flex-end">
-          <Button  variant="contained" href="/pending-task">View All Pending Task</Button>
-          <Button  variant="contained" href="/complete-task">View All Completed Task</Button>
           <Button onClick={() => setOpen1(true)} variant="contained">
             Add New
           </Button>
         </Stack>
+        <Typography variant="h5">All Pending  Task</Typography>
         <br />
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -119,7 +125,7 @@ export default function Home() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((item) => (
+              {sortedDetail.map((item) => (
                 <StyledTableRow key={item.id}>
                   <StyledTableCell component="th" scope="row">
                     {item.id}
